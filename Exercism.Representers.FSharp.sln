@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+#
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Exercism.Representers.FSharp", "src\Exercism.Representers.FSharp\Exercism.Representers.FSharp.fsproj", "{9428D8F1-00A3-4246-85DE-F0D31978D853}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Exercism.Representers.FSharp.IntegrationTests", "test\Exercism.Representers.FSharp.IntegrationTests\Exercism.Representers.FSharp.IntegrationTests.fsproj", "{3AAC4D42-D417-4CB1-A82B-82EC8F73330E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9428D8F1-00A3-4246-85DE-F0D31978D853}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9428D8F1-00A3-4246-85DE-F0D31978D853}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9428D8F1-00A3-4246-85DE-F0D31978D853}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9428D8F1-00A3-4246-85DE-F0D31978D853}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AAC4D42-D417-4CB1-A82B-82EC8F73330E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AAC4D42-D417-4CB1-A82B-82EC8F73330E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AAC4D42-D417-4CB1-A82B-82EC8F73330E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AAC4D42-D417-4CB1-A82B-82EC8F73330E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

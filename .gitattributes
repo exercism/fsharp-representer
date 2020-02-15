@@ -1,0 +1,4 @@
+* text=auto
+*.fs diff=fsharp
+*.sh eol=lf
+*.sln eol=crlf
