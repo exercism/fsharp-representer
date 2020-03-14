@@ -11,7 +11,8 @@
     that NPM has to be installed for this functionality to work.
 #>
 
+dotnet tool restore
 dotnet fantomas --recurse src
-dotnet fantomas test\Exercism.Representers.FSharp.IntegrationTests
+dotnet fantomas test/Exercism.Representers.FSharp.IntegrationTests/Tests.fs
 
 npx prettier@1.19.1 --write "**/*.md"

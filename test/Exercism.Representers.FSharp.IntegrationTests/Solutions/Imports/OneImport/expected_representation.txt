@@ -1,0 +1,5 @@
+module Fake
+
+let test() =
+    Console.Write("Hi ")
+    Console.WriteLine("there!")

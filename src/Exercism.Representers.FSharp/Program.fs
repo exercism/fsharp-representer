@@ -2,9 +2,8 @@ module Exercism.Representers.FSharp.Program
 
 open System.IO
 open CommandLine
+open Exercism.Representers.FSharp
 open Humanizer
-open Fantomas
-open FSharp.Compiler.SourceCodeServices
 
 type Options =
     { [<Value(0, Required = true, HelpText = "The solution's exercise")>]
@@ -13,54 +12,32 @@ type Options =
       InputDirectory: string
       [<Value(2, Required = true, HelpText = "The directory to which the results will be written")>]
       OutputDirectory: string }
+    member this.InputFile = Path.Combine(this.InputDirectory, sprintf "%s.fs" (this.Slug.Dehumanize().Pascalize()))
+    member this.RepresentationFile = Path.Combine(this.OutputDirectory, "representation.txt")
 
-let checker = FSharpChecker.Create()
+let private parseInputToTree (options: Options) = Syntax.parseFile options.InputFile
 
-let getUntypedTree file source =
-    let parsingOptions = { FSharpParsingOptions.Default with SourceFiles = [| file |] }
-    let parseFileResults =
-        checker.ParseFile(file, FSharp.Compiler.Text.SourceText.ofString source, parsingOptions)
-        |> Async.RunSynchronously
+let private simplifyTree tree = Syntax.simplifyTree tree
 
-    parseFileResults.ParseTree
+let private treeToRepresentation tree = Syntax.treeToString tree
 
-let writeToFile options representation =
-    let filePath = Path.Combine(options.OutputDirectory, "representation.txt")
-    File.WriteAllText(filePath, representation)
+let private writeRepresentation (options: Options) representation =
+    File.WriteAllText(options.RepresentationFile, representation)
 
-let formatTree file tree =
-    CodeFormatter.FormatASTAsync(tree, file, [], None, FormatConfig.FormatConfig.Default) |> Async.RunSynchronously
+let private parseSuccess options =
+    parseInputToTree options
+    |> Option.map simplifyTree
+    |> Option.map treeToRepresentation
+    |> Option.map (writeRepresentation options)
 
-let inputFile options =
-    let fileName = sprintf "%s.fs" (options.Slug.Dehumanize().Pascalize())
-    Path.Combine(options.InputDirectory, fileName)
-
-let createRepresentation options =
-    let file = inputFile options
-
-    if File.Exists file then
-        File.ReadAllText(file)
-        |> getUntypedTree file
-        |> Option.map (formatTree file)
-    else
-        None
-
-let writeRepresentationToFile options representation =
-    let filePath = Path.Combine(options.OutputDirectory, "representation.txt")
-    File.WriteAllText(filePath, representation)
-
-let onParseSuccess options =
-    match createRepresentation options with
-    | Some representation ->
-        writeRepresentationToFile options representation
-        0
-    | None -> 1
-
-let onParseFailure = 1
+let private parseOptions argv =
+    let parserResult = CommandLine.Parser.Default.ParseArguments<Options>(argv)
+    match parserResult with
+    | :? (Parsed<Options>) as options -> Some options.Value
+    | _ -> None
 
 [<EntryPoint>]
 let main argv =
-    let parserResult = CommandLine.Parser.Default.ParseArguments<Options>(argv)
-    match parserResult with
-    | :? (Parsed<Options>) as options -> onParseSuccess options.Value
-    | _ -> onParseFailure
+    match parseOptions argv |> Option.bind parseSuccess with
+    | Some _ -> 0
+    | None -> 1

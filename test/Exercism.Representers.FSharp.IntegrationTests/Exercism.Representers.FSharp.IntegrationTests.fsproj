@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Solutions\WhiteSpace\InconsistentWhiteSpace\Fake.fs" />
         <Compile Include="Tests.fs" />
     </ItemGroup>
 
