@@ -1,8 +1,8 @@
 module Tests
 
-open System
 open Xunit
 open System.IO
+open Exercism.Representers.FSharp.Program
 
 type TestSolutionRepresentation =
     { Expected: string
@@ -23,7 +23,6 @@ type TestSolutionsDataAttribute() =
         |> Seq.collect Directory.GetDirectories
         |> Seq.map (fun dir -> [| { Slug = "fake"; Directory = Path.GetFullPath(dir); DirectoryName = dir } |])
 
-open Exercism.Representers.FSharp
 
 let readRepresentation solution =
       let readFile fileName = File.ReadAllText(Path.Combine(solution.Directory, fileName))

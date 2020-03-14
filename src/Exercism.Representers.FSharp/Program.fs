@@ -1,4 +1,4 @@
-module Exercism.Representers.FSharp
+module Exercism.Representers.FSharp.Program
 
 open System.IO
 open CommandLine
