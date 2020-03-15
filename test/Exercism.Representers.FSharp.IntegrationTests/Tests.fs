@@ -1,19 +1,8 @@
 module Tests
 
 open Xunit
-open System.IO
-open Exercism.Representers.FSharp.Program
-
-type TestSolutionRepresentation =
-    { Expected: string
-      Actual: string }
-
-type TestSolution =
-    { Slug: string
-      Directory: string
-      DirectoryName: string }
-
 open Xunit.Sdk
+open System.IO
 
 type TestSolutionsDataAttribute() =
     inherit DataAttribute()
@@ -21,27 +10,28 @@ type TestSolutionsDataAttribute() =
     override __.GetData(_) =
         Directory.GetDirectories("Solutions")
         |> Seq.collect Directory.GetDirectories
-        |> Seq.map (fun dir ->
-            [| { Slug = "fake"
-                 Directory = Path.GetFullPath(dir)
-                 DirectoryName = dir } |])
+        |> Seq.map (fun dir -> [| dir |])
 
+type TestSolutionRepresentation =
+    { Expected: string
+      Actual: string }
 
-let readRepresentation solution =
-    let readFile fileName = File.ReadAllText(Path.Combine(solution.Directory, fileName))
-    let actual = readFile "representation.txt"
-    let expected = readFile "expected_representation.txt"
+let private readRepresentation (directory: string) =
+    let normalize (representation: string) = representation.Replace("\r\n", "\n").Trim()
+    let readFile fileName = File.ReadAllText(Path.Combine(directory, fileName)) |> normalize
 
-    { Expected = expected
-      Actual = actual }
+    { Expected = readFile "expected_representation.txt"
+      Actual = readFile "representation.txt" }
 
-let runRepresenter (solution: TestSolution) = main [| solution.Slug; solution.Directory; solution.Directory |]
+let private runRepresenter (directory: string) =
+    let argv = [| "fake"; directory; directory |]
+    Exercism.Representers.FSharp.Program.main argv
 
 [<Theory>]
 [<TestSolutionsData>]
-let ``Solution is represented correctly`` (solution: TestSolution) =
-    runRepresenter solution |> ignore
+let ``Solution is represented correctly`` (directory: string) =
+    runRepresenter directory |> ignore
 
-    let representation = readRepresentation solution
+    let representation = readRepresentation directory
 
     Assert.Equal(representation.Expected, representation.Actual)

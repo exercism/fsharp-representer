@@ -1,4 +1,4 @@
 module Fake
 
-let add x y =
-    if x > 0 then x else y
+let add PLACEHOLDER_1 PLACEHOLDER_2 =
+    if PLACEHOLDER_1 > 0 then PLACEHOLDER_1 else PLACEHOLDER_2

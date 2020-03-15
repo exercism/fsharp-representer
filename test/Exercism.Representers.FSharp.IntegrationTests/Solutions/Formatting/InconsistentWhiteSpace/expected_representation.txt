@@ -1,3 +1,3 @@
 module Fake
 
-let add (birthDate: DateTime) = birthDate.Add(TimeSpan.FromSeconds(1000000000.0))
+let add (PLACEHOLDER_1: DateTime) = PLACEHOLDER_1.Add(TimeSpan.FromSeconds(1000000000.0))

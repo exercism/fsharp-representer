@@ -22,7 +22,7 @@ param (
 )
 
 function Update-Expected {
-    $solutionsDir = Join-Path "test" "Exercism.Representers.CSharp.IntegrationTests" "Solutions"
+    $solutionsDir = Join-Path "test" "Exercism.Representers.FSharp.IntegrationTests" "Solutions"
     Generate-Solution-Representations $solutionsDir
     Move-Generated-Represenations-To-Expected
     Move-Generated-Mappings-To-Expected

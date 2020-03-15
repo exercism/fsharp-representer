@@ -1,0 +1,5 @@
+module Fake
+
+let PLACEHOLDER_1 = 1 + 2
+let PLACEHOLDER_2 = 4 - 3
+let PLACEHOLDER_3 = 5 * 5

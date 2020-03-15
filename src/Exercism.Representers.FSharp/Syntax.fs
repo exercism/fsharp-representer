@@ -6,8 +6,6 @@ open FSharp.Compiler.Text
 open FSharp.Compiler.SourceCodeServices
 open Fantomas
 
-let private formatConfig = FormatConfig.FormatConfig.Default
-
 let private checker = FSharpChecker.Create()
 
 type SyntaxVisitor() =
@@ -139,7 +137,7 @@ type SyntaxVisitor() =
             SynExpr.IfThenElse
                 (this.VisitSynExpr ifExpr, this.VisitSynExpr thenExpr, Option.map this.VisitSynExpr elseExpr, seqPoint,
                  isFromErrorRecovery, ifToThenRange, range)
-        | SynExpr.Ident(id) -> SynExpr.Ident(id)
+        | SynExpr.Ident(id) -> SynExpr.Ident(this.VisitIdent id)
         | SynExpr.LongIdent(isOptional, longDotId, seqPoint, range) ->
             SynExpr.LongIdent(isOptional, this.VisitLongIdentWithDots longDotId, seqPoint, range)
         | SynExpr.LongIdentSet(longDotId, expr, range) ->
@@ -702,7 +700,7 @@ type SyntaxVisitor() =
     abstract VisitIdent: Ident -> Ident
     default this.VisitIdent(ident: Ident): Ident = ident
 
-type RemoveImportsVisitor() =
+type RemoveImports() =
     inherit SyntaxVisitor()
 
     override this.VisitSynModuleOrNamespace(modOrNs: SynModuleOrNamespace): SynModuleOrNamespace =
@@ -715,9 +713,49 @@ type RemoveImportsVisitor() =
                     | _ -> true)
                 |> List.map this.VisitSynModuleDecl
 
+            // TODO: use base
             SynModuleOrNamespace
                 (this.VisitLongIdent longIdent, isRecursive, isModule, declsWithoutOpens, doc,
                  attrs |> List.map this.VisitSynAttributeList, Option.map this.VisitSynAccess access, range)
+
+type NormalizeIdentifiers() =
+    inherit SyntaxVisitor()
+
+    let mutable mapping: Map<string, string> = Map.empty
+
+    let placeholderKey (ident: Ident) = ident.idText
+
+    let placeholderValue() = sprintf "PLACEHOLDER_%d" (Map.count mapping + 1)
+
+    let tryAddPlaceholder (ident: Ident) =
+        let newValue = placeholderValue()
+        let key = placeholderKey ident
+
+        let value = Map.tryFind key mapping |> Option.defaultValue newValue
+
+        mapping <- Map.add key value mapping
+
+    let tryGetPlaceholder (ident: Ident) =
+        let key = placeholderKey ident
+        Map.tryFind key mapping
+
+    override __.VisitIdent(ident: Ident): Ident =
+        match tryGetPlaceholder ident with
+        | Some placeholder -> Ident(placeholder, ident.idRange)
+        | None -> ident
+
+    override __.VisitSynPat(sp: SynPat): SynPat =
+        match sp with
+        | SynPat.Named(_, ident, _, _, _) ->
+            tryAddPlaceholder ident
+            base.VisitSynPat(sp)
+        | _ -> base.VisitSynPat(sp)
+
+    override __.VisitSynArgInfo(sai: SynArgInfo): SynArgInfo =
+        match sai with
+        | SynArgInfo(_, _, ident) ->
+            Option.iter tryAddPlaceholder ident
+            base.VisitSynArgInfo(sai)
 
 let parseTree file =
     let parsingOptions = { FSharpParsingOptions.Default with SourceFiles = [| file |] }
@@ -733,6 +771,8 @@ let treeToString tree =
     CodeFormatter.FormatASTAsync(tree, "", [], None, FormatConfig.FormatConfig.Default) |> Async.RunSynchronously
 
 let simplifyTree tree =
-    let visitors = [ RemoveImportsVisitor() ]
+    let visitors: SyntaxVisitor list =
+        [ RemoveImports()
+          NormalizeIdentifiers() ]
 
     visitors |> List.fold (fun acc visitor -> visitor.VisitInput(acc)) tree
