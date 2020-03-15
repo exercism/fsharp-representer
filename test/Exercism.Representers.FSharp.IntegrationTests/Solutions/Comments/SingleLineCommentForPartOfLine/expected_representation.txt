@@ -1,0 +1,5 @@
+module Fake
+
+let add x y =
+    let sum = x + y
+    sum
