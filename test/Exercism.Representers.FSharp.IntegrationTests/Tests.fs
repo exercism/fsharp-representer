@@ -4,7 +4,7 @@ open Xunit
 open Xunit.Sdk
 open System.IO
 
-type TestSolutionsDataAttribute() =
+type SolutionDirectoriesDataAttribute() =
     inherit DataAttribute()
 
     override __.GetData(_) =
@@ -12,7 +12,7 @@ type TestSolutionsDataAttribute() =
         |> Seq.collect Directory.GetDirectories
         |> Seq.map (fun dir -> [| dir |])
 
-type TestSolutionRepresentation =
+type Representation =
     { Expected: string
       Actual: string }
 
@@ -28,7 +28,7 @@ let private runRepresenter (directory: string) =
     Exercism.Representers.FSharp.Program.main argv
 
 [<Theory>]
-[<TestSolutionsData>]
+[<SolutionDirectoriesData>]
 let ``Solution is represented correctly`` (directory: string) =
     runRepresenter directory |> ignore
 
