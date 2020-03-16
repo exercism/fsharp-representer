@@ -14,11 +14,12 @@ type Options =
       OutputDirectory: string }
     member this.InputFile = Path.Combine(this.InputDirectory, sprintf "%s.fs" (this.Slug.Dehumanize().Pascalize()))
     member this.RepresentationFile = Path.Combine(this.OutputDirectory, "representation.txt")
+    member this.MappingFile = Path.Combine(this.OutputDirectory, "mapping.json")
 
 let private parseSuccess (options: Options) =
     Syntax.parseFile options.InputFile
-    |> Option.map Syntax.simplifyTree
-    |> Option.map (Syntax.writeToFile options.RepresentationFile)
+    |> Option.map Syntax.toSimplifiedTreeAndMapping
+    |> Option.map (Syntax.writeToFile options.RepresentationFile options.MappingFile)
 
 let private parseOptions argv =
     let parserResult = CommandLine.Parser.Default.ParseArguments<Options>(argv)
