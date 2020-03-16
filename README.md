@@ -12,6 +12,14 @@ To create a representation of a solution, follow these steps:
 1. Run `./generate.ps1 <exercise> <input-directory> <output-directory>`. This script will generate a representation for the solution found in `<input-directory>`.
 1. Once the script has completed, the representation will be written to `<output-directory>/representation.txt`.
 
+## Generate a representation for multiple solutions
+
+To create representations for multiple solutions at once, follow these steps:
+
+1. Open a command prompt in the root directory.
+1. Run `./generate-in-bulk.ps1 <exercise> <input-directory>`. This script will create a representation for the solution in each directory sub-directory of `<input-directory>`.
+1. Once the script has completed, a representation for the solutions will be written in each directory.
+
 ## Generate a representation for a solution using Docker
 
 To generate a representation for a solution using a Docker container, follow these steps:
