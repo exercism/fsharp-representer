@@ -15,20 +15,10 @@ type Options =
     member this.InputFile = Path.Combine(this.InputDirectory, sprintf "%s.fs" (this.Slug.Dehumanize().Pascalize()))
     member this.RepresentationFile = Path.Combine(this.OutputDirectory, "representation.txt")
 
-let private parseInputToTree (options: Options) = Syntax.parseFile options.InputFile
-
-let private simplifyTree tree = Syntax.simplifyTree tree
-
-let private treeToRepresentation tree = Syntax.treeToString tree
-
-let private writeRepresentation (options: Options) representation =
-    File.WriteAllText(options.RepresentationFile, representation)
-
-let private parseSuccess options =
-    parseInputToTree options
-    |> Option.map simplifyTree
-    |> Option.map treeToRepresentation
-    |> Option.map (writeRepresentation options)
+let private parseSuccess (options: Options) =
+    Syntax.parseFile options.InputFile
+    |> Option.map Syntax.simplifyTree
+    |> Option.map (Syntax.writeToFile options.RepresentationFile)
 
 let private parseOptions argv =
     let parserResult = CommandLine.Parser.Default.ParseArguments<Options>(argv)

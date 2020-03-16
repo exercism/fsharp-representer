@@ -757,7 +757,7 @@ type NormalizeIdentifiers() =
             Option.iter tryAddPlaceholder ident
             base.VisitSynArgInfo(sai)
 
-let parseTree file =
+let private parseTree file =
     let parsingOptions = { FSharpParsingOptions.Default with SourceFiles = [| file |] }
     let parseFileResults =
         checker.ParseFile(file, File.ReadAllText(file) |> SourceText.ofString, parsingOptions) |> Async.RunSynchronously
@@ -767,12 +767,15 @@ let parseTree file =
 let parseFile file =
     if File.Exists file then parseTree file else None
 
-let treeToString tree =
-    CodeFormatter.FormatASTAsync(tree, "", [], None, FormatConfig.FormatConfig.Default) |> Async.RunSynchronously
-
 let simplifyTree tree =
     let visitors: SyntaxVisitor list =
         [ RemoveImports()
           NormalizeIdentifiers() ]
 
     visitors |> List.fold (fun acc visitor -> visitor.VisitInput(acc)) tree
+
+let private treeToString tree =
+    CodeFormatter.FormatASTAsync(tree, "", [], None, FormatConfig.FormatConfig.Default) |> Async.RunSynchronously
+
+let writeToFile file tree =
+    File.WriteAllText(file, treeToString tree)
