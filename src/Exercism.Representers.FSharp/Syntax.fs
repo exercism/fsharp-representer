@@ -777,5 +777,4 @@ let simplifyTree tree =
 let private treeToString tree =
     CodeFormatter.FormatASTAsync(tree, "", [], None, FormatConfig.FormatConfig.Default) |> Async.RunSynchronously
 
-let writeToFile file tree =
-    File.WriteAllText(file, treeToString tree)
+let writeToFile file tree = File.WriteAllText(file, treeToString tree)
