@@ -1,5 +1,5 @@
 module PLACEHOLDER_1
 
-let test() =
+let PLACEHOLDER_2() =
     Console.Write("Hi ")
     Console.WriteLine("there!")

@@ -59,6 +59,10 @@ type NormalizeIdentifiers() =
         | SynPat.Named(_, ident, _, _, _) ->
             tryAddPlaceholder ident
             base.VisitSynPat(sp)
+        | SynPat.LongIdent(longDotId, ident, _, _, _, _) ->
+            Option.iter tryAddPlaceholder ident
+            List.iter tryAddPlaceholder longDotId.Lid
+            base.VisitSynPat(sp)
         | _ -> base.VisitSynPat(sp)
 
     override __.VisitSynArgInfo(sai: SynArgInfo): SynArgInfo =

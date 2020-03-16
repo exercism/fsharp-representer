@@ -1,3 +1,3 @@
 module PLACEHOLDER_1
 
-let add (PLACEHOLDER_2: DateTime) = PLACEHOLDER_2.Add(TimeSpan.FromSeconds(1000000000.0))
+let PLACEHOLDER_3(PLACEHOLDER_2: DateTime) = PLACEHOLDER_2.Add(TimeSpan.FromSeconds(1000000000.0))

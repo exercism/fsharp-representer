@@ -1,3 +1,3 @@
 module PLACEHOLDER_1
 
-let sum PLACEHOLDER_2 = List.sum (1 :: PLACEHOLDER_2 @ [ 2; 3; 5 ])
+let PLACEHOLDER_3 PLACEHOLDER_2 = List.PLACEHOLDER_3(1 :: PLACEHOLDER_2 @ [ 2; 3; 5 ])
