@@ -21,7 +21,6 @@ type RemoveImports() =
                     | _ -> true)
                 |> List.map this.VisitSynModuleDecl
 
-            // TODO: use base
             SynModuleOrNamespace
                 (this.VisitLongIdent longIdent, isRecursive, isModule, declsWithoutOpens, doc,
                  attrs |> List.map this.VisitSynAttributeList, Option.map this.VisitSynAccess access, range)
@@ -49,10 +48,11 @@ type NormalizeIdentifiers() =
 
     member this.Mapping = mapping
 
-    override __.VisitIdent(ident: Ident): Ident =
-        match tryGetPlaceholder ident with
-        | Some placeholder -> Ident(placeholder, ident.idRange)
-        | None -> ident
+    override this.VisitSynModuleOrNamespace(modOrNs: SynModuleOrNamespace): SynModuleOrNamespace =
+        match modOrNs with
+        | SynModuleOrNamespace(longIdent, _, _, _, _, _, _, _) ->
+            List.iter tryAddPlaceholder longIdent
+            base.VisitSynModuleOrNamespace(modOrNs)
 
     override __.VisitSynPat(sp: SynPat): SynPat =
         match sp with
@@ -66,6 +66,11 @@ type NormalizeIdentifiers() =
         | SynArgInfo(_, _, ident) ->
             Option.iter tryAddPlaceholder ident
             base.VisitSynArgInfo(sai)
+
+    override __.VisitIdent(ident: Ident): Ident =
+        match tryGetPlaceholder ident with
+        | Some placeholder -> Ident(placeholder, ident.idRange)
+        | None -> ident
 
 let private checker = FSharpChecker.Create()
 

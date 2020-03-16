@@ -1,4 +1,4 @@
-module Fake
+module PLACEHOLDER_1
 
 type Volume =
     | Liter of float

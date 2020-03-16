@@ -1,4 +1,4 @@
-module Fake
+module PLACEHOLDER_1
 
 let test() =
     Console.Write("Hi ")
