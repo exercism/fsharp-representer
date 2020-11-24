@@ -4,7 +4,7 @@ WORKDIR /app
 COPY generate.sh /opt/representer/bin/
 
 # Download exercism tooling webserver
-RUN wget -P /usr/local/bin https://github.com/exercism/local-tooling-webserver/releases/latest/download/exercism_local_tooling_webserver && \
+RUN wget -P /usr/local/bin https://github.com/exercism/local-tooling-webserver/releases/latest/download/tooling_webserver && \
     chmod +x /usr/local/bin/exercism_local_tooling_webserver
 
 # Copy fsproj and restore as distinct layers
