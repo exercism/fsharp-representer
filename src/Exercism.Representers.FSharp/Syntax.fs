@@ -3,7 +3,7 @@ module Exercism.Representers.FSharp.Syntax
 open Exercism.Representers.FSharp.Visitor
 open System.IO
 open System.Text.Json
-open FSharp.Compiler.Ast
+open FSharp.Compiler.SyntaxTree
 open FSharp.Compiler.Text
 open FSharp.Compiler.SourceCodeServices
 open Fantomas
