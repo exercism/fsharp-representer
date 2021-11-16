@@ -15,7 +15,7 @@
         <PackageReference Update="FSharp.Core" Version="5.0.1" />
         <PackageReference Include="CommandLineParser" Version="2.8.0" />
         <PackageReference Include="Fantomas" Version="4.5.7" />
-        <PackageReference Include="Humanizer.Core" Version="2.11.10" />
+        <PackageReference Include="Humanizer.Core" Version="2.13.14" />
     </ItemGroup>
 
 </Project>
