@@ -49,3 +49,5 @@ if ($UpdateExpected.IsPresent) {
 }
 
 dotnet test
+
+exit $LastExitCode
