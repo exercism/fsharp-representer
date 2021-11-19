@@ -8,3 +8,4 @@ src/Exercism.Representers.FSharp/obj
 .github
 .gitignore
 .gitattributes
+.dockerignore
