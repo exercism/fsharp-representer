@@ -3,3 +3,10 @@
 !src/Exercism.Representers.FSharp
 src/Exercism.Representers.FSharp/bin
 src/Exercism.Representers.FSharp/obj
+.appends
+.git
+.github
+.gitignore
+.gitattributes
+.dockerignore
+Dockerfile
