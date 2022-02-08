@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Update="FSharp.Core" Version="6.0.1" />
+        <PackageReference Update="FSharp.Core" Version="6.0.3" />
         <PackageReference Include="CommandLineParser" Version="2.8.0" />
     </ItemGroup>
 
