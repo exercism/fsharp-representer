@@ -1,7 +1,4 @@
-module PLACEHOLDER_1
+module placeholder_1
 
-let PLACEHOLDER_4 PLACEHOLDER_2 PLACEHOLDER_3 =
-    if PLACEHOLDER_2 > 0 then
-        PLACEHOLDER_2
-    else
-        PLACEHOLDER_3
+let placeholder_4 placeholder_2 placeholder_3 =
+    if placeholder_2 > 0 then placeholder_2 else placeholder_3

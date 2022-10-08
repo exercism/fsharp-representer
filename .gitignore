@@ -4,6 +4,6 @@
 .ionide/
 .dotnet
 *.DotSettings.user
-
+representation.txt
 bin/
 obj/

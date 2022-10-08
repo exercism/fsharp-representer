@@ -1,4 +1,4 @@
-module PLACEHOLDER_1
+module placeholder_1
 
-let PLACEHOLDER_3 PLACEHOLDER_2 =
-    List.PLACEHOLDER_3(1 :: PLACEHOLDER_2 @ [ 2; 3; 5 ])
+let placeholder_3 placeholder_2 =
+    List.placeholder_3 (1 :: placeholder_2 @ [ 2; 3; 5 ])
