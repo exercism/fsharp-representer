@@ -3,6 +3,7 @@
 .vscode/
 .ionide/
 .dotnet
+*.DotSettings.user
 
 bin/
 obj/
