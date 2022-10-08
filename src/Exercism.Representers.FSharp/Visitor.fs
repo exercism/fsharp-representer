@@ -3,6 +3,7 @@ module Exercism.Representers.FSharp.Visitor
 open FSharp.Compiler.Syntax
 open FSharp.Compiler.SyntaxTrivia
 open FSharp.Compiler.Text
+open FSharp.Compiler.Xml
 
 type SyntaxVisitor() =
     abstract VisitInput: ParsedInput -> ParsedInput
@@ -26,7 +27,7 @@ type SyntaxVisitor() =
         match modOrNs with
         | SynModuleOrNamespace(longIdent, isRecursive, isModule, decls, doc, attrs, access, range, trivia) ->
             SynModuleOrNamespace
-                (this.VisitLongIdent longIdent, isRecursive, isModule, decls |> List.map this.VisitSynModuleDecl, doc,
+                (this.VisitLongIdent longIdent, isRecursive, isModule, decls |> List.map this.VisitSynModuleDecl, this.VisitPreXmlDoc(doc),
                  attrs |> List.map this.VisitSynAttributeList, Option.map this.VisitSynAccess access, range, trivia)
 
     abstract VisitSynModuleDecl: SynModuleDecl -> SynModuleDecl
@@ -325,7 +326,7 @@ type SyntaxVisitor() =
         | SynMemberDefn.ImplicitCtor(access, attrs, ctorArgs, selfIdentifier, doc, range) ->
             SynMemberDefn.ImplicitCtor
                 (Option.map this.VisitSynAccess access, attrs |> List.map this.VisitSynAttributeList,
-                 this.VisitSynSimplePats ctorArgs, Option.map this.VisitIdent selfIdentifier, doc, range)
+                 this.VisitSynSimplePats ctorArgs, Option.map this.VisitIdent selfIdentifier, this.VisitPreXmlDoc(doc), range)
         | SynMemberDefn.ImplicitInherit(inheritType, inheritArgs, inheritAlias, range) ->
             SynMemberDefn.ImplicitInherit
                 (this.VisitSynType inheritType, this.VisitSynExpr inheritArgs, Option.map this.VisitIdent inheritAlias,
@@ -346,7 +347,7 @@ type SyntaxVisitor() =
                                      withKeyword, getSetRange, range) ->
             SynMemberDefn.AutoProperty
                 (attrs |> List.map this.VisitSynAttributeList, isStatic, this.VisitIdent ident,
-                 Option.map this.VisitSynType typeOpt, propKind, flags, doc, Option.map this.VisitSynAccess access,
+                 Option.map this.VisitSynType typeOpt, propKind, flags, this.VisitPreXmlDoc(doc), Option.map this.VisitSynAccess access,
                  equalsRange, this.VisitSynExpr synExpr, withKeyword, getSetRange, range)
 
     abstract VisitSynSimplePat: SynSimplePat -> SynSimplePat
@@ -376,7 +377,7 @@ type SyntaxVisitor() =
         | SynBinding(access, kind, mustInline, isMutable, attrs, doc, valData, headPat, returnInfo, expr, range, seqPoint, trivia) ->
             SynBinding
                 (Option.map this.VisitSynAccess access, kind, mustInline, isMutable,
-                 attrs |> List.map this.VisitSynAttributeList, doc, this.VisitSynValData valData,
+                 attrs |> List.map this.VisitSynAttributeList, this.VisitPreXmlDoc(doc), this.VisitSynValData valData,
                  this.VisitSynPat headPat, Option.map this.VisitSynBindingReturnInfo returnInfo, this.VisitSynExpr expr,
                  range, seqPoint, trivia)
 
@@ -395,7 +396,7 @@ type SyntaxVisitor() =
             SynValSig
                 (attrs |> List.map this.VisitSynAttributeList, this.VisitSynIdent ident,
                  this.VisitSynValTyparDecls explicitValDecls, this.VisitSynType synType, this.VisitSynValInfo arity,
-                 isInline, isMutable, doc, Option.map this.VisitSynAccess access, Option.map this.VisitSynExpr expr,
+                 isInline, isMutable, this.VisitPreXmlDoc(doc), Option.map this.VisitSynAccess access, Option.map this.VisitSynExpr expr,
                  range, trivia)
 
     abstract VisitSynValTyparDecls: SynValTyparDecls -> SynValTyparDecls
@@ -495,7 +496,7 @@ type SyntaxVisitor() =
         | SynComponentInfo(attribs, typeParams, constraints, longId, doc, preferPostfix, access, range) ->
             SynComponentInfo
                 (attribs |> List.map this.VisitSynAttributeList, Option.map this.VisitSynTyparDecls typeParams,
-                 constraints, longId, doc, preferPostfix, Option.map this.VisitSynAccess access, range)
+                 constraints, longId, this.VisitPreXmlDoc(doc), preferPostfix, Option.map this.VisitSynAccess access, range)
 
     abstract VisitSynTypeDefnRepr: SynTypeDefnRepr -> SynTypeDefnRepr
 
@@ -551,7 +552,7 @@ type SyntaxVisitor() =
         match sedr with
         | SynExceptionDefnRepr(attrs, unionCase, longId, doc, access, range) ->
             SynExceptionDefnRepr
-                (attrs |> List.map this.VisitSynAttributeList, this.VisitSynUnionCase unionCase, longId, doc,
+                (attrs |> List.map this.VisitSynAttributeList, this.VisitSynUnionCase unionCase, longId, this.VisitPreXmlDoc(doc),
                  Option.map this.VisitSynAccess access, range)
 
     abstract VisitSynAttribute: SynAttribute -> SynAttribute
@@ -572,7 +573,7 @@ type SyntaxVisitor() =
         | SynUnionCase(attrs, ident, uct, doc, access, range, trivia) ->
             SynUnionCase
                 (attrs |> List.map this.VisitSynAttributeList, this.VisitSynIdent ident, uct,
-                 doc, Option.map this.VisitSynAccess access, range, trivia)
+                 this.VisitPreXmlDoc(doc), Option.map this.VisitSynAccess access, range, trivia)
 
     abstract VisitSynEnumCase: SynEnumCase -> SynEnumCase
 
@@ -581,7 +582,7 @@ type SyntaxVisitor() =
         | SynEnumCase(attrs, ident, cnst, cnstRange, doc, trivia, range) ->
             SynEnumCase
                 (attrs |> List.map this.VisitSynAttributeList, this.VisitSynIdent ident, this.VisitSynConst cnst,
-                 cnstRange, doc, trivia, range)
+                 cnstRange, this.VisitPreXmlDoc(doc), trivia, range)
 
     abstract VisitSynField: SynField -> SynField
 
@@ -590,7 +591,7 @@ type SyntaxVisitor() =
         | SynField(attrs, isStatic, ident, typ, isMutable, doc, access, range) ->
             SynField
                 (attrs |> List.map this.VisitSynAttributeList, isStatic, Option.map this.VisitIdent ident,
-                 this.VisitSynType typ, isMutable, doc, Option.map this.VisitSynAccess access, range)
+                 this.VisitSynType typ, isMutable, this.VisitPreXmlDoc(doc), Option.map this.VisitSynAccess access, range)
 
     abstract VisitSynType: SynType -> SynType
 
@@ -672,7 +673,7 @@ type SyntaxVisitor() =
         match modOrNs with
         | SynModuleOrNamespaceSig(longIdent, isRecursive, isModule, decls, doc, attrs, access, range, trivia) ->
             SynModuleOrNamespaceSig
-                (this.VisitLongIdent longIdent, isRecursive, isModule, decls |> List.map this.VisitSynModuleSigDecl, doc,
+                (this.VisitLongIdent longIdent, isRecursive, isModule, decls |> List.map this.VisitSynModuleSigDecl, this.VisitPreXmlDoc(doc),
                  attrs |> List.map this.VisitSynAttributeList, Option.map this.VisitSynAccess access, range, trivia)
 
     abstract VisitSynModuleSigDecl: SynModuleSigDecl -> SynModuleSigDecl
@@ -712,3 +713,6 @@ type SyntaxVisitor() =
 
     abstract VisitIdent: Ident -> Ident
     default this.VisitIdent(ident: Ident): Ident = ident
+    
+    abstract VisitPreXmlDoc: PreXmlDoc -> PreXmlDoc
+    default this.VisitPreXmlDoc(doc: PreXmlDoc): PreXmlDoc = doc

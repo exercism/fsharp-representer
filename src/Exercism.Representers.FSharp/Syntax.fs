@@ -6,6 +6,7 @@ open System.Text.Json
 open FSharp.Compiler.Syntax
 open FSharp.Compiler.SyntaxTrivia
 open FSharp.Compiler.Text
+open FSharp.Compiler.Xml
 open Fantomas.Core
 open Fantomas.FCS.Parse
 
@@ -15,6 +16,8 @@ type RemoveComments() =
 
     override this.VisitParsedImplFileInputTrivia(trivia: ParsedImplFileInputTrivia) =
         { trivia with CodeComments = [] }
+        
+    override this.VisitPreXmlDoc(_: PreXmlDoc) = PreXmlDoc.Empty
 
 type RemoveImports() =
     inherit SyntaxVisitor()
@@ -38,7 +41,7 @@ type NormalizeIdentifiers() =
 
     let mutable mapping: Map<string, string> = Map.empty
 
-    let placeholderValue() = sprintf "PLACEHOLDER_%d" (Map.count mapping + 1)
+    let placeholderValue() = $"placeholder_%d{Map.count mapping + 1}"
     
     let placeholderKey (ident: Ident) = ident.idText
 
@@ -123,9 +126,9 @@ let toSimplifiedTreeAndMapping (tree, source) =
     (simplifiedTree, placeholdersToIdentifiers, source)
 
 let private treeToRepresentation tree source =
-    CodeFormatter.FormatASTAsync(tree, source, FormatConfig.FormatConfig.Default)
-    |> Async.RunSynchronously
-    |> fun representation -> representation.Replace("\n\n\n", "\n\n") // TODO: workaround this
+    let config = { FormatConfig.FormatConfig.Default with KeepMaxNumberOfBlankLines = 1 }
+    let code = CodeFormatter.FormatASTAsync(tree, source, config) |> Async.RunSynchronously
+    CodeFormatter.FormatDocumentAsync(false, code, config) |> Async.RunSynchronously // The second pass is needed to remove empty lines
 
 let private mappingToJson mapping = JsonSerializer.Serialize(mapping)
 
