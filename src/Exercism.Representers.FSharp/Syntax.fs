@@ -10,7 +10,6 @@ open FSharp.Compiler.Xml
 open Fantomas.Core
 open Fantomas.FCS.Parse
 
-
 type RemoveComments() =
     inherit SyntaxVisitor()
 
