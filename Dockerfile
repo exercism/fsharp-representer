@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1.102-alpine3.10 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0.401-alpine3.16-amd64 AS build
 WORKDIR /app
 
 # Copy fsproj and restore as distinct layers
@@ -10,7 +10,7 @@ COPY src/Exercism.Representers.FSharp/ ./
 RUN dotnet publish -r linux-musl-x64 -c Release -o /opt/representer --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1.2-alpine3.10
+FROM mcr.microsoft.com/dotnet/runtime-deps:6.0.9-alpine3.16-amd64
 WORKDIR /opt/representer
 
 COPY --from=build /opt/representer/ .
