@@ -9,7 +9,7 @@ open System.Text.Json
 type SolutionDirectoriesDataAttribute() =
     inherit DataAttribute()
 
-    override __.GetData(_) =
+    override _.GetData(_) =
         Directory.GetDirectories("Solutions")
         |> Seq.collect Directory.GetDirectories
         |> Seq.map (fun dir -> [| dir |])

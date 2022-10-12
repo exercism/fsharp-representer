@@ -3,6 +3,8 @@
 .vscode/
 .ionide/
 .dotnet
-
+*.DotSettings.user
+representation.txt
+mapping.json
 bin/
 obj/

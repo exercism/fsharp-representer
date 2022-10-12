@@ -1,5 +1,5 @@
-module PLACEHOLDER_1
+module placeholder_1
 
-let PLACEHOLDER_2 = 1 + 2
-let PLACEHOLDER_3 = 4 - 3
-let PLACEHOLDER_4 = 5 * 5
+let placeholder_2 = 1 + 2
+let placeholder_3 = 4 - 3
+let placeholder_4 = 5 * 5

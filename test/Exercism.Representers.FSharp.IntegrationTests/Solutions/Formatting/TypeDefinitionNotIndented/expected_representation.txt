@@ -1,4 +1,4 @@
-module PLACEHOLDER_1
+module placeholder_1
 
 type Volume =
     | Liter of float

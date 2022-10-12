@@ -1,4 +1,4 @@
-module PLACEHOLDER_1
+module placeholder_1
 
-let PLACEHOLDER_3 (PLACEHOLDER_2: DateTime) =
-    PLACEHOLDER_2.Add(TimeSpan.FromSeconds(1000000000.0))
+let placeholder_3 (placeholder_2: DateTime) =
+    placeholder_2.Add(TimeSpan.FromSeconds(1000000000.0))
