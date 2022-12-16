@@ -121,8 +121,10 @@ let toSimplifiedTreeAndMapping (tree, source) =
         |> Map.toList
         |> List.map (fun (identifier, placeholder) -> (placeholder, identifier))
         |> Map.ofList
+        
+    let metadata = Map.ofList [("version", 2)]
 
-    (simplifiedTree, placeholdersToIdentifiers, source)
+    (simplifiedTree, placeholdersToIdentifiers, source, metadata)
 
 let private treeToRepresentation tree source =
     let config = { FormatConfig.FormatConfig.Default with KeepMaxNumberOfBlankLines = 1 }
@@ -131,6 +133,9 @@ let private treeToRepresentation tree source =
 
 let private mappingToJson mapping = JsonSerializer.Serialize(mapping)
 
-let writeToFile representationFile mappingFile (tree, mapping, source) =
+let private metadataToJson metadata = JsonSerializer.Serialize(metadata)
+
+let writeToFile representationFile representationJsonFile mappingFile (tree, mapping, source, metadata) =
     File.WriteAllText(representationFile, treeToRepresentation tree source + "_test")
+    File.WriteAllText(representationJsonFile, metadataToJson metadata )
     File.WriteAllText(mappingFile, mappingToJson mapping)
