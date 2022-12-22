@@ -136,6 +136,6 @@ let private mappingToJson mapping = JsonSerializer.Serialize(mapping)
 let private metadataToJson metadata = JsonSerializer.Serialize(metadata)
 
 let writeToFile representationFile representationJsonFile mappingFile (tree, mapping, source, metadata) =
-    File.WriteAllText(representationFile, treeToRepresentation tree source + "_test")
+    File.WriteAllText(representationFile, treeToRepresentation tree source)
     File.WriteAllText(representationJsonFile, metadataToJson metadata )
     File.WriteAllText(mappingFile, mappingToJson mapping)
