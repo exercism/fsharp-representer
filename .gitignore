@@ -5,6 +5,8 @@
 .dotnet
 *.DotSettings.user
 representation.txt
+representation.json
 mapping.json
 bin/
 obj/
+!/bin

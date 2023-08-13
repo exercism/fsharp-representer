@@ -16,6 +16,6 @@ WORKDIR /opt/representer
 COPY --from=build /opt/representer/ .
 COPY --from=build /usr/local/bin/ /usr/local/bin/
 
-COPY run.sh /opt/representer/bin/
+COPY bin/run.sh /opt/representer/bin/
 
 ENTRYPOINT ["sh", "/opt/representer/bin/run.sh"]
