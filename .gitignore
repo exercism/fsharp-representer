@@ -9,3 +9,4 @@ representation.json
 mapping.json
 bin/
 obj/
+!/bin
