@@ -3,10 +3,10 @@ module Exercism.Representers.FSharp.Syntax
 open Exercism.Representers.FSharp.Visitor
 open System.IO
 open System.Text.Json
-open FSharp.Compiler.Syntax
-open FSharp.Compiler.SyntaxTrivia
-open FSharp.Compiler.Text
-open FSharp.Compiler.Xml
+open Fantomas.FCS.Syntax
+open Fantomas.FCS.SyntaxTrivia
+open Fantomas.FCS.Text
+open Fantomas.FCS.Xml
 open Fantomas.Core
 open Fantomas.FCS.Parse
 
@@ -127,9 +127,10 @@ let toSimplifiedTreeAndMapping (tree, source) =
     (simplifiedTree, placeholdersToIdentifiers, source, metadata)
 
 let private treeToRepresentation tree source =
-    let config = { FormatConfig.FormatConfig.Default with KeepMaxNumberOfBlankLines = 1 }
-    let code = CodeFormatter.FormatASTAsync(tree, source, config) |> Async.RunSynchronously
-    CodeFormatter.FormatDocumentAsync(false, code, config) |> Async.RunSynchronously // The second pass is needed to remove empty lines
+    let config = { FormatConfig.Default with KeepMaxNumberOfBlankLines = 1 }
+    let code = CodeFormatter.FormatASTAsync(tree, config) |> Async.RunSynchronously
+    let formatResult = CodeFormatter.FormatDocumentAsync(false, code, config) |> Async.RunSynchronously // The second pass is needed to remove empty lines
+    formatResult.Code
 
 let private mappingToJson mapping = JsonSerializer.Serialize(mapping)
 
