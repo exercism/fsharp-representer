@@ -159,8 +159,8 @@ type SyntaxVisitor() =
             SynExpr.TryFinally
                 (this.VisitSynExpr tryExpr, this.VisitSynExpr finallyExpr, range, trySeqPoint, withSeqPoint, trivia)
         | SynExpr.Lazy(ex, range) -> SynExpr.Lazy(this.VisitSynExpr ex, range)
-        | SynExpr.Sequential(seqPoint, isTrueSeq, expr1, expr2, range) ->
-            SynExpr.Sequential(seqPoint, isTrueSeq, this.VisitSynExpr expr1, this.VisitSynExpr expr2, range)
+        | SynExpr.Sequential(seqPoint, isTrueSeq, expr1, expr2, range, trivia) ->
+            SynExpr.Sequential(seqPoint, isTrueSeq, this.VisitSynExpr expr1, this.VisitSynExpr expr2, range, trivia)
         | SynExpr.SequentialOrImplicitYield(seqPoint, expr1, expr2, ifNotStmt, range) ->
             SynExpr.SequentialOrImplicitYield
                 (seqPoint, this.VisitSynExpr expr1, this.VisitSynExpr expr2, this.VisitSynExpr ifNotStmt, range)
@@ -328,7 +328,7 @@ type SyntaxVisitor() =
         | SynMemberDefn.ImplicitCtor(access, attrs, ctorArgs, selfIdentifier, doc, range, trivia) ->
             SynMemberDefn.ImplicitCtor
                 (Option.map this.VisitSynAccess access, attrs |> List.map this.VisitSynAttributeList,
-                 this.VisitSynSimplePats ctorArgs, Option.map this.VisitIdent selfIdentifier, this.VisitPreXmlDoc(doc), range, trivia)
+                 this.VisitSynPat ctorArgs, Option.map this.VisitIdent selfIdentifier, this.VisitPreXmlDoc(doc), range, trivia)
         | SynMemberDefn.ImplicitInherit(inheritType, inheritArgs, inheritAlias, range) ->
             SynMemberDefn.ImplicitInherit
                 (this.VisitSynType inheritType, this.VisitSynExpr inheritArgs, Option.map this.VisitIdent inheritAlias,
@@ -348,7 +348,7 @@ type SyntaxVisitor() =
         | SynMemberDefn.AutoProperty(attrs, isStatic, ident, typeOpt, propKind, flags, flagsForSet, doc, access, synExpr, range, trivia) ->
             SynMemberDefn.AutoProperty
                 (attrs |> List.map this.VisitSynAttributeList, isStatic, this.VisitIdent ident,
-                 Option.map this.VisitSynType typeOpt, propKind, flags, flagsForSet, this.VisitPreXmlDoc(doc), Option.map this.VisitSynAccess access,
+                 Option.map this.VisitSynType typeOpt, propKind, flags, flagsForSet, this.VisitPreXmlDoc(doc), this.VisitSynValSigAccess access,
                  this.VisitSynExpr synExpr, range, trivia)
 
     abstract VisitSynSimplePat: SynSimplePat -> SynSimplePat
@@ -384,8 +384,8 @@ type SyntaxVisitor() =
 
     default this.VisitSynValData(svd: SynValData): SynValData =
         match svd with
-        | SynValData(flags, svi, ident, transformedFromProperty) ->
-            SynValData(flags, this.VisitSynValInfo svi, Option.map this.VisitIdent ident, Option.map this.VisitIdent transformedFromProperty)
+        | SynValData(flags, svi, ident) ->
+            SynValData(flags, this.VisitSynValInfo svi, Option.map this.VisitIdent ident)
 
     abstract VisitSynValSig: SynValSig -> SynValSig
 
@@ -395,7 +395,7 @@ type SyntaxVisitor() =
             SynValSig
                 (attrs |> List.map this.VisitSynAttributeList, this.VisitSynIdent ident,
                  this.VisitSynValTyparDecls explicitValDecls, this.VisitSynType synType, this.VisitSynValInfo arity,
-                 isInline, isMutable, this.VisitPreXmlDoc(doc), Option.map this.VisitSynAccess access, Option.map this.VisitSynExpr expr,
+                 isInline, isMutable, this.VisitPreXmlDoc(doc), this.VisitSynValSigAccess access, Option.map this.VisitSynExpr expr,
                  range, trivia)
 
     abstract VisitSynValTyparDecls: SynValTyparDecls -> SynValTyparDecls
@@ -632,6 +632,8 @@ type SyntaxVisitor() =
             SynType.SignatureParameter(List.map this.VisitSynAttributeList synAttributeLists, optional, Option.map this.VisitIdent identOption, this.VisitSynType usedType, range)
         | SynType.FromParseError range -> SynType.FromParseError range
         | SynType.Intersection(typar, types, range, trivia) -> SynType.Intersection(Option.map this.VisitSynTypar typar, types |> List.map this.VisitSynType, range, trivia)
+        | SynType.StaticConstantNull range -> SynType.StaticConstantNull range
+        | SynType.WithNull(innerType, ambivalent, range, trivia) -> SynType.WithNull(this.VisitSynType(innerType), ambivalent, range, trivia)
 
     abstract VisitSynTypeOrTrivia: SynTypeOrTrivia -> SynTypeOrTrivia
     default this.VisitSynTypeOrTrivia(synTypeOrTrivia: SynTypeOrTrivia): SynTypeOrTrivia = synTypeOrTrivia
@@ -664,6 +666,10 @@ type SyntaxVisitor() =
     abstract VisitSynAccess: SynAccess -> SynAccess
 
     default this.VisitSynAccess(a: SynAccess): SynAccess = a
+    
+    abstract VisitSynValSigAccess: SynValSigAccess -> SynValSigAccess
+    
+    default this.VisitSynValSigAccess(a: SynValSigAccess): SynValSigAccess = a
 
     abstract VisitSynBindingKind: SynBindingKind -> SynBindingKind
 
