@@ -9,7 +9,7 @@ RUN dotnet restore -a $TARGETARCH
 
 # Copy everything else and build
 COPY src/Exercism.Representers.FSharp/ ./
-RUN dotnet publish -a $TARGETARCH -c Release -o /opt/representer --no-restore --self-contained true
+RUN dotnet publish -a $TARGETARCH --no-restore --self-contained true --output /opt/representer
 
 # Build runtime image
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:10.0.3-alpine3.23 AS runtime
