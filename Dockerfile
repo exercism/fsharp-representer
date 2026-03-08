@@ -1,16 +1,18 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0.103-alpine3.23 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0.103-alpine3.23 AS build
+ARG TARGETARCH
+
 WORKDIR /app
 
 # Copy fsproj and restore as distinct layers
 COPY src/Exercism.Representers.FSharp/Exercism.Representers.FSharp.fsproj ./
-RUN dotnet restore -r linux-musl-x64
+RUN dotnet restore -a $TARGETARCH
 
 # Copy everything else and build
 COPY src/Exercism.Representers.FSharp/ ./
-RUN dotnet publish -r linux-musl-x64 -c Release -o /opt/representer --no-restore --self-contained true
+RUN dotnet publish -a $TARGETARCH -c Release -o /opt/representer --no-restore --self-contained true
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/runtime-deps:10.0.103-alpine3.23 AS runtime
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:10.0.3-alpine3.23 AS runtime
 WORKDIR /opt/representer
 
 COPY --from=build /opt/representer/ .
