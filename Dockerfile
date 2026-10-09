@@ -12,7 +12,7 @@ COPY src/Exercism.Representers.FSharp/ ./
 RUN dotnet publish -a $TARGETARCH --no-restore --self-contained true --output /opt/representer
 
 # Build runtime image
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:10.0.3-alpine3.23 AS runtime
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:10.0.12-alpine3.23 AS runtime
 WORKDIR /opt/representer
 
 COPY --from=build /opt/representer/ .
